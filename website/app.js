@@ -1,10 +1,10 @@
 /* Global Variables */
-const apiKey    = "86fb0c21f009d6e0b625b3842a57ce97";
+const apiKey    = "86fb0c21f009d6e0b625b3842a57ce97&units=metric";
 const baseURL   = "http://api.openweathermap.org/data/2.5/weather?zip=";//{zip code},{country code}&appid={API key}";
 const generateBtn = document.getElementById('generate');
 // Create a new date instance dynamically with JS
 let d = new Date();
-let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
+let newDate = (d.getMonth()+1)+'.'+ d.getDate()+'.'+ d.getFullYear();
 
 const getData = async (url, zipCode, apiKey)=>{
     const response = await fetch(url+zipCode+'&appid='+apiKey);
@@ -53,14 +53,18 @@ generateBtn.addEventListener('click',generateClick);
 function generateClick(){
     const userResponse = document.getElementById('feelings').value;
     const zipCode = document.getElementById('zip').value;
-    getData(baseURL,zipCode,apiKey).then(data=>{
-        postData('/addData',{
-            temperature :data.main.temp,
-            date        :newDate,
-            userResponse
+    if(zipCode.length > 1 && !isNaN(Number(zipCode))){
+        getData(baseURL,zipCode,apiKey).then(data=>{
+            postData('/addData',{
+                temperature :data.main.temp,
+                date        :newDate,
+                userResponse
+            });
+        })
+        .then(()=>{
+            showData();
         });
-    })
-    .then(()=>{
-        showData();
-    });
+    }else{
+        alert("Invalid ZipCode");
+    }
 };
